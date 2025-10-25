@@ -1,11 +1,13 @@
 # Nyx - AI Assistant for macOS
 
-Nyx is an intelligent, modular AI assistant for macOS that can control your system, manage tasks, and help you be more productive.
+Nyx is an intelligent, modular AI assistant for macOS with a Python backend and Electron frontend.
 
 ## Features
 
 ### Core Capabilities
+- Python backend with asyncio and Socket.IO
 - Modular architecture with hot-reloadable plugins
+- Q-Learning system for adaptive intelligence
 - System control for macOS applications
 - Real-time communication via WebSocket
 - Modern Electron interface with dark theme
@@ -23,35 +25,49 @@ Nyx is an intelligent, modular AI assistant for macOS that can control your syst
 - Quick note taking
 - Example: "Create a note: Buy groceries"
 
+**AI Module**
+- General conversation
+- Fallback for unknown commands
+
 ## Installation
 
 ### Prerequisites
 - macOS 10.15 or later
+- Python 3.8+
 - Node.js 16+ and npm
 
 ### Setup
 
-1. Install dependencies:
+1. Install Python dependencies:
 ```bash
-npm install
+cd /Users/alecfaccioli/Documents/Nyx
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+2. Install app dependencies:
+```bash
 cd app
 npm install
 cd ..
 ```
 
-2. Start the backend:
+3. Run Nyx:
 ```bash
-npm start
+chmod +x start-nyx.sh
+./start-nyx.sh
 ```
 
-3. In another terminal, start the Electron app:
+Or manually:
 ```bash
+# Terminal 1: Python backend
+source venv/bin/activate
+python3 core/server.py
+
+# Terminal 2: Electron app
+cd app
 npm run electron
-```
-
-Or run in development mode:
-```bash
-npm run dev
 ```
 
 ## Usage
@@ -69,95 +85,85 @@ npm run dev
 - "Create a note: Meeting notes for project X"
 - "Show my notes"
 
+**Conversation**
+- "Hello"
+- "Thanks"
+
 ### Keyboard Shortcuts
 - `Cmd + Shift + N` - Show/hide Nyx window
 
+## Architecture
+
+### Python Backend
+```
+core/
+  server.py          # Main server with Socket.IO
+brain/
+  brain_core.py      # Central intelligence
+  nlu/
+    intent_classifier.py
+    entity_extractor.py
+  learning/
+    q_learning.py
+    feedback_manager.py
+modules/
+  system.py          # System control
+  notes.py           # Apple Notes
+  ai.py              # General AI
+```
+
+### Electron Frontend
+```
+app/
+  electron.js        # Main process
+  src/               # React components
+  public/            # Static assets
+```
+
 ## Creating Custom Modules
 
-Modules are JavaScript files in the `modules/` directory.
+Create a new Python file in `modules/` directory:
 
-### Module Template
-
-```javascript
-class MyModule {
-  constructor(core) {
-    this.core = core;
-    this.name = 'mymodule';
-    this.description = 'What this module does';
-  }
-
-  canHandle(message) {
-    const lower = message.toLowerCase();
-    return lower.includes('keyword');
-  }
-
-  async execute(message) {
-    try {
-      // Your logic here
-      
-      return {
-        text: 'Response to user',
-        type: 'success'
-      };
-    } catch (error) {
-      return { 
-        text: `Error: ${error.message}`, 
-        type: 'error' 
-      };
-    }
-  }
-}
-
-module.exports = MyModule;
+```python
+class MyModule:
+    def __init__(self, core):
+        self.core = core
+        self.name = 'mymodule'
+        self.description = 'What this module does'
+        
+    async def execute(self, message, decision):
+        try:
+            # Your logic here
+            
+            return {
+                'text': 'Response to user',
+                'type': 'success'
+            }
+        except Exception as e:
+            return { 
+                'text': f'Error: {str(e)}', 
+                'type': 'error' 
+            }
 ```
 
-
-### Using AppleScript in Modules
-
-```javascript
-await this.core.executeAppleScript(`
-  tell application "Finder"
-    activate
-  end tell
-`);
-```
-
-### Module Response Types
+Module response types:
 - `success` - Successful operation
 - `error` - Error occurred
 - `info` - Informational message
-
-## Project Structure
-
-```
-Nyx/
-├── core/
-│   └── index.js          # Core engine with module loader
-├── modules/
-│   ├── system.js         # System control
-│   └── notes.js          # Apple Notes integration
-├── app/
-│   ├── src/              # React source files
-│   ├── public/           # Static assets
-│   ├── electron.js       # Electron main process
-│   └── package.json      # App dependencies
-├── package.json          # Core dependencies
-├── .env                  # Configuration
-└── README.md             # Documentation
-```
 
 ## Development
 
 ### Running in Development Mode
 ```bash
-# Terminal 1: Core with auto-reload
-npm run dev
+# Python backend with auto-reload
+source venv/bin/activate
+python3 core/server.py
 
-# Terminal 2: React app
+# React app
 cd app && npm start
 
-# Terminal 3: Electron
-npm run electron
+# Electron
+cd app && npm run electron
 ```
 
 ### Building
@@ -167,25 +173,25 @@ npm run build
 npm run dist:mac
 ```
 
-### Module Hot Reload
-Modules automatically reload when you save changes.
-
 ## Troubleshooting
 
 ### Permission denied errors
-Grant accessibility permissions to Terminal/Electron in:
+Grant accessibility permissions to Terminal/Python in:
 System Preferences > Security & Privacy > Privacy > Accessibility
 
 ### Port already in use
-Change the port in `.env`:
-```
-PORT=3002
-```
+The server runs on port 3001. Change it in `core/server.py` if needed.
 
-### Modules not loading
+### Module not loading
 - Check syntax errors in module files
-- Verify all modules export a class
-- Check console for error messages
+- Ensure module class name follows convention: `ModuleName + 'Module'`
+- Check Python console for error messages
+
+### Python dependencies issues
+```bash
+source venv/bin/activate
+pip install --upgrade -r requirements.txt
+```
 
 ## Security Notes
 
@@ -199,4 +205,4 @@ MIT License
 
 ---
 
-Built for productivity and automation on macOS.
+Built with Python (backend) and Electron (frontend) for productivity on macOS.
