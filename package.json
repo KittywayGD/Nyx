@@ -1,0 +1,35 @@
+{
+  "name": "nyx-assistant",
+  "version": "1.0.0",
+  "description": "Nyx - Your modular AI assistant for macOS",
+  "main": "core/index.js",
+  "scripts": {
+    "start": "node core/index.js",
+    "dev": "nodemon core/index.js",
+    "app": "cd app && npm start",
+    "app:build": "cd app && npm run build",
+    "electron": "cd app && npm run electron",
+    "build": "cd app && npm run electron:build"
+  },
+  "keywords": [
+    "ai",
+    "assistant",
+    "automation",
+    "macos"
+  ],
+  "author": "Alec",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "chokidar": "^3.5.3",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mathjs": "^15.0.0",
+    "node-fetch": "^2.6.9",
+    "socket.io": "^4.6.1",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
